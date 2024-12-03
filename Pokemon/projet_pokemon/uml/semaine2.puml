@@ -1,0 +1,276 @@
+@startuml umlsemaine1
+
+package affinite{
+    interface TypePokemon{
+       + {abstract}getId(): Integer
+       + {abstract} getNom(): String
+       + {abstract}aUnAvantageSur(type : TypePokemon): boolean
+       + {abstract}aUnDesavantageSur(type : TypePokemon): boolean 
+       + {abstract}toString():String 
+    }
+
+    class TypeAir{
+
+        - {static} m_ID: Integer
+        - m_val : Integer
+
+       + getId(): Integer
+       + getNom(): String
+       + aUnAvantageSur(type): boolean
+       + aUnDesavantageSur(type): boolean
+       + toString():String
+    }
+
+    class TypeEau{
+
+        - {static} m_ID: Integer
+        - m_val : Integer
+
+       + getId(): Integer
+       + getNom(): String
+       + aUnAvantageSur(type): boolean
+       + aUnDesavantageSur(type): boolean
+       +toString():String
+    }
+
+    class TypeFeu{
+        - {static} m_ID: Integer
+        - m_val : Integer
+       + getId(): Integer
+       + getNom(): String
+       + aUnAvantageSur(type): boolean
+       + aUnDesavantageSur(type): boolean
+       +toString():String
+    }
+
+    class TypeTerre{
+        - {static} m_ID: Integer
+        - m_val : Integer
+       + getId(): Integer
+       + getNom(): String
+       + aUnAvantageSur(type): boolean
+       + aUnDesavantageSur(type): boolean
+       +toString():String 
+    }
+
+
+}
+
+TypeTerre -[dashed]-|> TypePokemon
+TypeAir -[dashed]-|> TypePokemon
+TypeFeu -[dashed]-|> TypePokemon
+TypeEau -[dashed]-|> TypePokemon
+
+
+package Pokemon{
+    class GenerateurPokemon {
+    - {static} m_pokeList: String[*]
+    - {static} m_types
+    + {static} genPokemon()
+    }
+
+
+    class Pokemon {
+    - m_attaque : Integer
+    - m_vie : Integer
+    - m_vieInitial : Integer
+    - m_nom : String
+
+
+
+    + <<create>>Pokemon(nom : String , vie : Integer , attaque : Intege , type)
+    + attaque(other):
+    + getNom(): String
+    + getVie(): Intege
+    + getType(): TypePokemon
+    + getVieInitial(): Intege
+    + getAttaque(): Intege
+    - attaque_intermediaire(other , attaque : Intege )
+    + toString():String
+    }
+
+    Pokemon -> Pokemon: "attaque()"
+    TypePokemon "\n1" o--> "*\n\tm_type" Pokemon: sert à créer >
+    TypePokemon o--> "m_types[4]\n\n" GenerateurPokemon : > procure
+    GenerateurPokemon --> Pokemon : génère
+}
+
+
+package structure{
+    class Defausse{
+        - m_pokemonDefausses
+
+        + <<Create>>Defausse()
+        + defausser(pokemon)
+        + getSize(): Integer
+        + toString(): String
+    }
+
+
+
+    class MainJoueur{
+        - m_main 
+
+        + <<create>> MainJoueur()
+        + remplir(deck)
+        + choisir()
+        + choisir(nom : String)
+        + donneMain()
+        + toString():String
+
+    }
+
+
+
+    class Pioche{
+       - m_pioche:
+
+       + <<Create>>Pioche(nbPokemon : Integer)
+       + piocher()
+       + getSize(): Integer
+       + toString():String
+
+    }
+
+    class Terrain{
+        - m_pokemonPoses
+        + <<create>>Terrain()
+        + poser(pokemon):
+        + retirer(nom : String )
+        + getPokemonPoses()
+        + getPokemon(index: Integer)
+        + getSize(): Integer
+        + toString() : String
+
+    }
+     
+}
+
+MainJoueur -> Pioche: utilise
+MainJoueur -> PokemonNotFound: utilise
+
+Terrain -> PokemonNotFound: utilise
+Pokemon.Pokemon "0,1\nappartient à" *--> "*\npossède"Defausse: m_pokemonDefausses
+Pokemon.Pokemon "0,1\nappartient à" *--> "*\npossède"Terrain: m_pokemonPoses
+Pokemon.Pokemon "0,1\nappartient à" *--> "*\npossède"MainJoueur: m_main
+Pokemon.Pokemon "0,1\nappartient à" *--> "*\npossède"Pioche: m_pioche
+
+package joueur{
+    abstract class Joueur{
+ 
+        +<<create>> Pioche()
+        +defausse(nom : String ) : 
+        +getPokemonTerrain() : Pokemon[*]
+        +getMain() : MainJoueur
+        +getTerrain():Terrain
+        +getSizeTerrain():Integer
+        +getSizeMain():Integer
+        +getSizePioche():Integer
+        +getSizeDefausse():Integer
+        +toString() : String
+
+    }
+
+    class  Humain extends Joueur{
+        +<<create>> Humain (joueur1 : boolean)
+        +attaque( pokemon : String , pokemeonAdverse : String )
+        +place(pokemon : String )
+    }
+
+    class Ordinateur extends Joueur{
+        +<<create>> Ordinarteur(joueur1 : boolean)
+        +joue(pokemonadverse : Pokemon[*])
+        +pioche()
+        +place()
+        +attaque(p : pokemon , pokemonsAdverse : Pokemon[*])
+        +trouverRandom(listePokemons : Pokemon[*]) : Pokemon
+        +trouverPokemonFaible(listePokemons : Pokemon[*]) : Pokemon 
+    }
+
+}
+
+
+
+
+
+
+    Joueur "1" o-> "1 \n #m_pioche" Pioche  : possede >
+    Joueur -> PokemonNotFound: utilise
+    Humain -> PokemonNotFound: utilise
+    Joueur "1" o-> "1 \n #m_terrain" Terrain  : joue sur >
+    Joueur "1" o-> "1 \n #m_defausse" Defausse  : possede >
+    Joueur "1" o-> "1 \n #m_main" MainJoueur  : possede >
+
+package Affichage{
+    class affichage{
+        + {static} AffichagePokemon():
+        + {static} AffichageVotreMain() :
+        + {static} AffichageRound() :
+        + {static} AffichageMonTerrain(): 
+        + {static} AffichageterrainIA() :
+        + {static} afficherPokemon(List<Pokemon> listePokemon) : String 
+        + {static} clear():
+        + {static} pause():
+        + {static} afficherMain():
+    }
+}
+
+package Jeu{
+    class Partie{
+        # humainJoueur1:boolean
+
+
+        <<create>>Partie()
+        -finPartie():boolean
+    }
+    Partie "1" o-> "1 \n #m_humain" Humain  : a besoin d'un >
+    Partie "1" o-> "1 \n #m_IA" Ordinateur  : a besoin d'un >
+    Partie --> affichage : utilise
+    Partie --> "1..*" affichage
+
+    class Round{
+        #m_humainJoueur1 : boolean
+        # m_PokemonDejaJoues: String[*]
+
+        <<create>>Round(humain : Humain , IA : Ordinateur , humainJoueur : boolean)
+        +lancer()
+        +tourIA()
+        +placementPokemons()
+        +rafraichissementConsole()
+        +entreeUtilisateur(message : String)
+        +checkDead(joueur : Joueur)
+
+    }
+    Round "1" o-> "1 \n #m_humain" Humain  : a besoin d'un >
+    Round "1" o-> "1 \n #m_IA" Ordinateur  : a besoin d'un >
+
+    Round --> affichage : utilise
+
+    Round --> "est composé" Partie
+    Partie --> "compose" Round
+    Round --> "1..*" affichage
+
+
+}
+
+
+Round -> ErrorManager.PokemonNotFound: utilise
+Round -> ErrorManager.PokemonHasAlreadyAttacked: utilise
+
+package ErrorManager {
+    class Exception{
+        
+    }
+
+    class PokemonHasAlreadyAttacked extends Exception {
+        <<create>> PokemonHasAlreadyAttacked()
+    }
+
+    class PokemonNotFound extends Exception{
+        <<create>> PokemonNotFound()
+    }
+}
+
+
+
+@enduml

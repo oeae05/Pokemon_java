@@ -1,0 +1,584 @@
+@startuml umlsemaine1
+
+package affinite{
+    interface TypePokemon{
+       + {abstract} getId(): Integer
+       + {abstract} getNom(): String
+       + {abstract} aUnAvantageSur(type : TypePokemon): boolean
+       + {abstract} aUnDesavantageSur(type : TypePokemon): boolean 
+       + {abstract} toString():String 
+       + {abstract} getVal(): Integer
+
+    }
+
+    class TypeAir implements TypePokemon{
+
+        - {static} m_ID: integer
+        - m_val : integer
+
+       + getId(): integer
+       + getNom(): String
+       + aUnAvantageSur(type): boolean
+       + aUnDesavantageSur(type): boolean
+       + toString():String
+    }
+
+    class TypeEau implements TypePokemon{
+
+        - {static} m_ID: integer
+        - m_val : integer
+
+       + getId(): Integer
+       + getNom(): String
+       + aUnAvantageSur(type): boolean
+       + aUnDesavantageSur(type): boolean
+       +toString():String
+    }
+
+    class TypeFeu implements TypePokemon{
+        - {static} m_ID: integer
+        - m_val : integer
+       + getId(): integer
+       + getNom(): String
+       + aUnAvantageSur(type): boolean
+       + aUnDesavantageSur(type): boolean
+       +toString():String
+    }
+
+    class TypeTerre implements TypePokemon{
+        - {static} m_ID: integer
+        - m_val : integer
+       + getId(): Integer
+       + getNom(): String
+       + aUnAvantageSur(type): boolean
+       + aUnDesavantageSur(type): boolean
+       +toString():String 
+    }
+
+    class pouvoirEther implements TypePokemon{
+        - {static} m_ID: integer
+        - m_val : integer
+       + getId(): Integer
+       + getNom(): String
+       + aUnAvantageSur(type): boolean
+       + aUnDesavantageSur(type): boolean
+       +toString():String 
+    }
+
+    class pouvoirPlombs implements TypePokemon{
+        - {static} m_ID: integer
+        - m_val : integer
+       + getId(): Integer
+       + getNom(): String
+       + aUnAvantageSur(type): boolean
+       + aUnDesavantageSur(type): boolean
+       +toString():String 
+    }
+
+
+}
+
+
+
+package pokemon{
+    class GenerateurPokemon {
+    - {static} m_pokeList: String[*]
+    + {static} genPokemon()
+    }
+
+
+    class Pokemon {
+    - m_attaque : Integer
+    - m_vie : Integer
+    - m_vieInitial : Integer
+    - m_nom : String
+    - m_aUtilisePouvoir : boolean
+
+
+
+    + <<create>>Pokemon(nom : String , vie : Integer , attaque : integer , type)
+    +"use"Power(reponse: String, terrain: GrandTerrain)
+    + attaque(other):
+    + getNom(): String
+    + getVieInitial(): integer  
+    +getAUtiliserPouvoir(): boolean
+    + getAttaque(): integer
+    + getType(): TypePokemon    
+    + setAttaque(nouvelleAttaque : integer)
+    + getVie(): integer
+    + setBoolPouvoir(aUtilisePouvoir : boolean)
+    - attaque_intermediaire(other , attaque : integer )
+    +getPouvoir():Pouvoirs
+    +setPouvoir(pouvoirs : Pouvoirs)
+    + toString():String
+    +setType(type : typePokemon)
+    }
+
+
+}
+
+pokemon.Pokemon -[dashed]-> pokemon.Pokemon: "use" >
+pokemon.Pokemon -[dashed]-> TypePokemon: "use" >
+pokemon.Pokemon -[dashed]-> structure.GrandTerrain: "use" >
+    
+    
+pokemon.Pokemon -[dashed]->  Pouvoir: "use"  >
+    
+pokemon.Pokemon "\n1" *--> "*\n #m_type" TypePokemon: se sert de  >
+pokemon.Pokemon "\n1" *--> "*\n #m_pouvoir" pouvoir.Pouvoir: se sert de  >
+
+GenerateurPokemon "\n1" *--> "*\n #m_type" TypePokemon: se sert de  >
+GenerateurPokemon "\n1" *--> "*\n #m_pouvoir" pouvoir.Pouvoir: se sert de  >
+GenerateurPokemon o--> pokemon.Pokemon : génère
+
+
+package structure{
+    class Defausse{
+        
+
+        + <<Create>>Defausse()
+        + defausser(pokemon)
+        + getSize(): integer
+        + toString(): String
+    }
+
+
+
+    class MainJoueur{
+
+        + <<create>> MainJoueur()
+        + remplir(deck)
+        + choisir()
+        + choisir(index : integer )
+        + getSize() : integer
+        + donneMain()
+        + toString():String
+
+    }
+
+
+
+    class Pioche{
+
+
+       + <<Create>>Pioche(nbPokemon : integer)
+       + piocher()
+       + getSize(): integer
+       + toString():String
+       + getSize()
+
+    }
+
+    class Terrain{
+
+        + <<create>>Terrain()
+        + poser(pokemon):
+        + retirer(nom : String )
+        + getPokemonPoses()
+        + getPokemon(index: integer)
+        + getSize(): integer
+        + toString() : String
+
+    }
+
+    class GrandTerrain{
+        +<<create>> GrandTerrain(terrainHumain: GrandTerrain, terrainIA: GrandTerrain)
+        +getPokemon(pokemon: String, terrainHumain: boolean): Pokemon
+        +getPokemon(pokemon:String): Pokemon
+    }
+    GrandTerrain "1" *--> "1 \n #m_terrainHumain" terrain
+    GrandTerrain "1" *--> "1 \n #m_terrainIA" terrain
+}
+
+GrandTerrain -[dashed]-> ErrorManager.PokemonNotFound: "throws" >
+
+
+Defausse  -[dashed]->  pokemon.Pokemon : "use" >
+Defausse "1"*--> "* \n -m_pokemonDefausses" pokemon.Pokemon
+
+
+MainJoueur "1"*--> "* \n -m_main" pokemon.Pokemon
+MainJoueur -[dashed]-> Pioche: "use" >
+MainJoueur -[dashed]-> ErrorManager.PokemonNotFound: "use" >
+
+Pioche "1"*--> "* \n -m_pioche" pokemon.Pokemon
+
+structure.Terrain "1"*--> "* \n -m_pokemonPoses" pokemon.Pokemon
+structure.Terrain -[dashed]-> ErrorManager.PokemonNotFound: "use" >
+
+
+
+package joueur{
+    abstract class Joueur{
+ 
+        +<<create>> Joueur(joueur1 : boolean)
+        +pioche()
+        +defausse(nom : String ) : 
+        +getMain() : MainJoueur
+        +getTerrain():Terrain
+        +getSizeTerrain():integer
+        +getSizeMain():integer
+        +getSizePioche():integer
+        +getSizeDefausse():integer
+        +toString() : String
+
+    }
+
+    Joueur "1" *--> "1 \n #m_pioche" Pioche  : possede >
+    Joueur --> PokemonNotFound: utilise
+    Joueur "1" *--> "1 \n #m_terrain" structure.Terrain  : joue sur >
+    Joueur "1" *--> "1 \n #m_defausse" Defausse  : possede >
+    Joueur "1" *--> "1 \n #m_main" MainJoueur  : possede >
+
+    class  Humain extends Joueur{
+        +<<create>> Humain (joueur1 : boolean)
+        +attaque( pokemon : integer, pokemeonAdverse : integer , terrainAdverse : Terrain)
+        +place(index : integer)
+    }
+
+       Humain -[dashed]-> PokemonNotFound: "use" >
+       Humain  -[dashed]->  structure.Terrain : "use" >
+
+    class Ordinateur extends Joueur{
+        +<<create>> Ordinarteur(joueur1 : boolean)
+        +place()        
+        +joue(pokemonadverse : Pokemon[*])
+        +pioche()
+        +attaque(p : pokemon , pokemonsAdverse : Pokemon[*])
+        +trouverRandom(listePokemons : Pokemon[*]) : Pokemon
+        +trouverPokemonFaible(listePokemons : Pokemon[*]) : Pokemon 
+        +"use"Power(p :  Pokemon , terrain : GrandTerrain, humain : boolean)
+        
+    }
+
+    Ordinateur -[dashed]-> pokemon.Pokemon : "use" >
+    Ordinateur -[dashed]->  structure.GrandTerrain : "use" >
+    Ordinateur -[dashed]-> ErrorManager.PokemonHasNoPower: "throws" >
+    Ordinateur -[dashed]-> ErrorManager.PokemonNotFound: "throws" >
+    Ordinateur -[dashed]-> ErrorManager.PokemonIsTheSame: "throws" >
+    Ordinateur -[dashed]-> ErrorManager.InputIsNotString: "throws" >
+
+}
+
+
+
+
+
+package console{
+    class Affichage{
+        + {static} AffichagePokemon()
+        + {static} AffichageVotreMain() 
+        + {static} AffichageRound() 
+        + {static} AffichageMonTerrain()
+        + {static} AffichageterrainIA() 
+        + {static} afficherPokemon(terrain : Terain)
+        + {static} clear():
+        + {static} pa"use"():
+        + {static} afficherMain():
+        + {static} afficherPiocheDefausse(joueur : Joueur)
+        + {static} affichagePerdu(joueur_moi : Joueur)
+        + {static} affichageGagner(joueur_moi : Joueur)
+        + {static} affiche_description(pokemons1 Pokemon[*], pokemons2 : Pokemon[*],main : Pokemon[*])
+
+    }
+
+    class Input {
+        +<<create>>Input()
+        +getInt(): Integer
+        +getString(): String
+    }
+
+    class Output {
+        +<<create>>Ouput()
+        +println(s: String)
+    }
+
+    Affichage  -[dashed]->  structure.Terrain : "use" >
+    Affichage  -[dashed]->  Joueur : "use" >
+    Affichage  -[dashed]->  pokemon.Pokemon : "use" >
+
+    Input -[dashed]-> .Scanner : "use" >
+    Output -[dashed]-> .PrintWriter : "use" >
+
+    Input -[dashed]-> ErrorManager.InputIsNotInt: "throws" >
+    Input -[dashed]-> ErrorManager.InputIsEmpty: "throws" >
+
+}
+
+package Jeu{
+    class Partie{
+        - humainJoueur1:boolean
+
+
+        <<create>>Partie()
+        -finPartie():boolean
+    }
+    Partie "1"  *-->  "1 \n #m_humain" Humain  : a besoin d'un >
+    Partie "1"  *-->  "1 \n #m_IA" Ordinateur  : a besoin d'un >
+    Partie "1"--> "*" affichage : utilise
+
+
+    class Round{
+        #m_humainJoueur1 : boolean
+        # m_PokemonDejaJoues: String[*]
+        # m_PokemonDejaPouvoirs : String[*]
+
+
+        <<create>>Round(humain : Humain , IA : Ordinateur , humainJoueur : boolean)
+        +lancer()
+        -tourIA()
+        +placementPokemons()
+        +rafraichissementConsole()
+        +checkDead(joueur : Joueur)
+        -utilisationPouvoirs(Pokemon: poke, reponse: String)
+        -demandePouvoirs()
+        -attaquePokemons()
+        -checkDead(joueur: Joueur)
+
+    }
+    Round "1" *--> "1 \n #m_humain" Humain  : a besoin d'un >
+    Round "1" *--> "1 \n #m_IA" Ordinateur  : a besoin d'un >
+    Round  -[dashed]-> affichage : "use" >
+    Round  -[dashed]-> Joueur : "use" >
+    Round -[dashed]->  Partie : "use" >
+    Partie -[dashed]->  Round : "use" >
+
+
+}
+
+
+Round -[dashed]-> ErrorManager.PokemonNotFound: "use" >
+Round -[dashed]-> ErrorManager.PokemonHasAlreadyAttacked: "use" >
+Round -[dashed]-> ErrorManager.PokemonHasAlreadyUsedPower: "use" >
+Round -[dashed]-> ErrorManager.PokemonHasNoPower: "use" >
+Round -[dashed]-> ErrorManager.TerrainNotFound: "use" >
+Round -[dashed]-> ErrorManager.PokemonIsTheSame: "use" >
+
+
+
+
+package ErrorManager {
+    class Exception{
+        
+    }
+
+    class PokemonHasAlreadyAttacked extends Exception {
+        <<create>> PokemonHasAlreadyAttacked()
+    }
+
+    class PokemonNotFound extends Exception{
+        <<create>> PokemonNotFound()
+    }
+
+    class PokemonHasAlreadyUsedPower extends Exception{
+        <<create>> PokemonHasAlready"Use"dPower()
+    }
+
+    class PokemonHasNoPower extends Exception{
+        <<create>> PokemonHasNoPower()
+    }
+
+    class TerrainNotFound extends Exception{
+        <<create>> TerrainNotFound()
+    }
+
+    class PokemonIsTheSame extends Exception{
+        <<create>> PokemonIsTheSame()
+    }
+
+    class InputIsEmpty extends Exception{
+        <<create>> InputIsEmpty()
+    }
+
+    class InputIsNotInCorrectFormat extends Exception{
+        <<create>> InputIsNotInCorrectFormat()
+    }
+
+    class InputIsNotString extends InputIsNotInCorrectFormat{
+        <<create>> InputIsNotString()
+    }
+
+    class InputIsNotInt extends InputIsNotInCorrectFormat{
+        <<create>> InputIsNotInt()
+    }
+
+}
+
+package pouvoir{
+    interface Pouvoir{
+        + {abstract} "use"(lanceur: Pokemon, pokemonVise: String, terrain: GrandTerrain)
+        + {abstract} getNom() : String
+        + {abstract} getDescription() : String
+        + {abstract} getQuestions() : String[*]
+    }
+
+    class Ether implements Pouvoir{
+        +{static} m_questions : String[*]
+        - m_nom : String
+        - m_description : String
+
+        +getNom(): String
+        +checkAnswers ( answers : String[*], utilisateur : Pokemon , terrain1 : Terrain , terrain2 : Terrain)
+        +getQuestions : String[*]
+        +"use"(lanceur: Pokemon, pokemonVise: String, terrain: GrandTerrain, humain: boolean)
+        +getDescription() : String
+
+    }
+
+    Ether  -[dashed]->  pokemon.Pokemon : "use" >
+    Ether  -[dashed]->  structure.GrandTerrain : "use" >
+    Ether  -[dashed]->   affinite.pouvoirEther: "use" >
+    Ether  -[dashed]->  ErrorManager.PokemonNotFound: "throws" >
+    
+
+    class FerveurGuerriere implements Pouvoir{
+        +{static} m_questions : String[*]
+        - m_nom : String
+        - m_description : String
+
+        +getNom(): String
+        +checkAnswers ( answers : String[*], utilisateur : Pokemon , terrain1 : Terrain , terrain2 : Terrain)
+        +getQuestions : String[*]
+        +"use"(lanceur: Pokemon, pokemonVise: String, terrain: GrandTerrain, humain: boolean)
+        +getDescription() : String
+
+    }
+
+    Kamikaze  -[dashed]->  pokemon.Pokemon : "use" >
+    Kamikaze  -[dashed]->  structure.GrandTerrain : "use" >
+    Kamikaze  -[dashed]->  ErrorManager.PokemonNotFound: "throws" >
+
+    class Kamikaze implements Pouvoir{
+        +{static} m_questions : String[*]
+        - m_nom : String
+        - m_description : String
+
+        +getNom(): String
+        +checkAnswers ( answers : String[*], utilisateur : Pokemon , terrain1 : Terrain , terrain2 : Terrain)
+        +getQuestions : String[*]
+        +"use"(lanceur: Pokemon, pokemonVise: String, terrain: GrandTerrain, humain: boolean)
+        +getDescription() : String
+
+    }
+
+    Kamikaze  -[dashed]->  pokemon.Pokemon : "use" >
+    Kamikaze  -[dashed]->  structure.GrandTerrain : "use" >
+    Kamikaze  -[dashed]->  ErrorManager.PokemonNotFound: "throws" >
+
+
+    class nul implements Pouvoir{
+        +{static} m_questions : String[*]
+        - m_nom : String
+        - m_description : String
+
+        +getNom(): String
+        +checkAnswers ( answers : String[*], utilisateur : Pokemon , terrain1 : Terrain , terrain2 : Terrain)
+        +getQuestions : String[*]
+        +"use"(lanceur: Pokemon, pokemonVise: String, terrain: GrandTerrain, humain: boolean)
+        +getDescription() : String
+
+    }
+
+    nul  -[dashed]->  pokemon.Pokemon : "use" >
+    nul  -[dashed]->  structure.GrandTerrain : "use" >
+    nul  -[dashed]->  ErrorManager.PokemonHasNoPower: "throws" >
+
+    class Peur implements Pouvoir{
+        +{static} m_questions : String[*]
+        - m_nom : String
+        - m_description : String
+
+        +getNom(): String
+        +checkAnswers ( answers : String[*], utilisateur : Pokemon , terrain1 : Terrain , terrain2 : Terrain)
+        +getQuestions : String[*]
+        +"use"(lanceur: Pokemon, pokemonVise: String, terrain: GrandTerrain, humain: boolean)
+        +getDescription() : String
+
+    }
+
+    Peur  -[dashed]->  pokemon.Pokemon : "use" >
+    Peur  -[dashed]->  structure.GrandTerrain : "use" >
+    Peur  -[dashed]->  ErrorManager.PokemonNotFound: "throws" >
+
+    class Plomb implements Pouvoir{
+        +{static} m_questions : String[*]
+        - m_nom : String
+        - m_description : String
+
+        +getNom(): String
+        +checkAnswers ( answers : String[*], utilisateur : Pokemon , terrain1 : Terrain , terrain2 : Terrain)
+        +getQuestions : String[*]
+        +"use"(lanceur: Pokemon, pokemonVise: String, terrain: GrandTerrain, humain: boolean)
+        +getDescription() : String
+
+    }
+
+    Plomb  -[dashed]->  pokemon.Pokemon : "use" >
+    Plomb  -[dashed]->  structure.GrandTerrain : "use" >
+    Plomb  -[dashed]->  ErrorManager.PokemonNotFound: "throws" >
+
+    class Regeneration implements Pouvoir{
+        +{static} m_questions : String[*]
+        - m_nom : String
+        - m_description : String
+
+        +getNom(): String
+        +checkAnswers ( answers : String[*], utilisateur : Pokemon , terrain1 : Terrain , terrain2 : Terrain)
+        +getQuestions : String[*]
+        +"use"(lanceur: Pokemon, pokemonVise: String, terrain: GrandTerrain, humain: boolean)
+        +getDescription() : String
+
+    }
+
+    Regeneration  -[dashed]->  pokemon.Pokemon : "use" >
+    Regeneration  -[dashed]->  structure.GrandTerrain : "use" >
+    Regeneration  -[dashed]->  ErrorManager.PokemonNotFound: "throws" >
+    Regeneration  -[dashed]->  ErrorManager.PokemonIsTheSame: "throws" >
+
+    class SoinTotal implements Pouvoir{
+        +{static} m_questions : String[*]
+        - m_nom : String
+        - m_description : String
+
+        +getNom(): String
+        +checkAnswers ( answers : String[*], utilisateur : Pokemon , terrain1 : Terrain , terrain2 : Terrain)
+        +getQuestions : String[*]
+        +"use"(lanceur: Pokemon, pokemonVise: String, terrain: GrandTerrain, humain: boolean)
+        +getDescription() : String
+
+    }
+
+    SoinTotal  -[dashed]->  pokemon.Pokemon : "use" >
+    SoinTotal  -[dashed]->  structure.GrandTerrain : "use" >
+    SoinTotal  -[dashed]->  ErrorManager.PokemonNotFound: "throws" >
+
+    class Usurpation implements Pouvoir{
+        +{static} m_questions : String[*]
+        - m_nom : String
+        - m_description : String
+
+        +getNom(): String
+        +checkAnswers ( answers : String[*], utilisateur : Pokemon , terrain1 : Terrain , terrain2 : Terrain)
+        +getQuestions : String[*]
+        +"use"(lanceur: Pokemon, pokemonVise: String, terrain: GrandTerrain, humain: boolean)
+        +getDescription() : String
+
+    }
+
+    Usurpation  -[dashed]->  pokemon.Pokemon : "use" >
+    Usurpation  -[dashed]->  structure.GrandTerrain : "use" >
+    Usurpation  -[dashed]->  ErrorManager.PokemonNotFound: "throws" >
+
+
+
+}
+
+class Main {
+    +{static} main(args : String[]) : void
+}
+
+Main -[dashed]-> Partie : crée
+
+
+
+@enduml

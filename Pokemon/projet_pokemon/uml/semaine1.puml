@@ -1,0 +1,159 @@
+@startuml umlsemaine1
+
+package affinite{
+    interface TypePokemon{
+       + {abstract}getId(): Integer
+       + {abstract} getNom(): String
+       + {abstract}aUnAvantageSur(type : TypePokemon): boolean
+       + {abstract}aUnDesavantageSur(type : TypePokemon): boolean 
+       + {abstract}toString():String 
+    }
+
+    class TypeAir{
+       + getId(): Integer
+       + getNom(): String
+       + aUnAvantageSur(type : TypePokemon): boolean
+       + aUnDesavantageSur(type : TypePokemon): boolean 
+       +toString():String
+    }
+
+    class TypeEau{
+       + getId(): Integer
+       + getNom(): String
+       + aUnAvantageSur(type : TypePokemon): boolean
+       + aUnDesavantageSur(type : TypePokemon): boolean 
+       +toString():String
+    }
+
+    class TypeFeu{
+       + getId(): Integer
+       + getNom(): String
+       + aUnAvantageSur(type : TypePokemon): boolean
+       + aUnDesavantageSur(type : TypePokemon): boolean 
+       +toString():String
+    }
+
+    class TypeTerre{
+       + getId(): Integer
+       + getNom(): String
+       + aUnAvantageSur(type : TypePokemon): boolean
+       + aUnDesavantageSur(type : TypePokemon): boolean
+       +toString():String 
+    }
+}
+
+TypeTerre -[dashed]-|> TypePokemon
+TypeAir -[dashed]-|> TypePokemon
+TypeFeu -[dashed]-|> TypePokemon
+TypeEau -[dashed]-|> TypePokemon
+
+
+package pokemon{
+    class GenerateurPokemon {
+    - m_pokeList: String[*]
+
+    - types: TypePokemon[*]
+    + {static} genPokemon(): Pokemon
+    }
+
+
+    class Pokemon {
+    - m_attaque : Integer
+    - m_vie : Integer
+    - m_nom : String
+
+
+    + <<create>>Pokemon(nom : String , vie : Integer , attaque : int , type : TypePokemon)
+    + attaque(other : Pokemon):
+    + get_nom(): String
+    + get_type(): TypePokemon
+    - attaque_intermediaire(other : Pokemon , attaque : int )
+    +toString():String
+
+    }
+
+}
+
+GenerateurPokemon --> Pokemon : <<use>>
+Pokemon "1" o-> "1 \n #m_type" TypePokemon  : possede >
+
+
+package structure{
+    class Defausse{
+        #m_pokemonDefausses : Pokemon[*]
+        
+        +<<Create>>Defausse() :
+        +defausser(pokemon Pokemon) : 
+        +toString():String
+    }
+
+    class MainJoueur{
+        #m_main : Pokemon[*]
+
+        +<<create>> MainJoueur():
+        +remplir():
+        +choisir(nom : String):Pokemon
+        +toString():String
+
+    }
+
+    class Pioche{
+       #m_pioche : Pokemon[*]
+
+       +<<Create>>Pioche(nbPokemon : int):
+       +piocher():Pokemon
+       +toString():String
+
+    }
+
+    class Terrain{
+        #m_pokemonPoses : Pokemon[*]
+
+        +<<create>>Terrain():
+        +poser(pokemon : Pokemon):
+        +retirer(nom : String ): Pokemon
+        +toString():String
+
+    }
+}
+
+package Joueur{
+    abstract class Joueur{
+ 
+        +<<create>> Pioche()
+        +defausse(nom : String ) : 
+        +getPokemonTerrain() : Pokemon[*]
+        +getMain() : MainJoueur
+        +toString() : String
+
+    }
+
+    class Humain{
+        +<<create>> Humain (joueur1 : boolean)
+        +attaque( pokemon : String , pokemeonAdverse : String )
+        +place(pokemon : String )
+    }
+
+    class Ordinateur{
+        +<<create>> Ordinarteur(joueur1 : boolean)
+        +joue(pokemonadverse : Pokemon[*])
+        +pioche()
+        +place()
+        +attaque(p : pokemon , pokemonsAdverse : Pokemon[*])
+        +trouverRandom(listePokemons : Pokemon[*]) : Pokemon
+        +trouverPokemonFaible(listePokemons : Pokemon[*]) : Pokemon 
+    }
+
+}
+
+Humain -up-|> Joueur
+Ordinateur -up-|> Joueur
+
+Joueur "1" o-> "1 \n #m_pioche" Pioche  : possede >
+Joueur "1" o-> "1 \n #m_terrain" Terrain  : joue sur >
+Joueur "1" o-> "1 \n #m_defausse" Defausse  : possede >
+Joueur "1" o-> "1 \n #m_main" MainJoueur  : possede >
+
+
+
+@enduml
